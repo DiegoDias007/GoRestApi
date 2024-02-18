@@ -7,4 +7,5 @@ import (
 
 func RegisterAuthController(server *gin.Engine) {
 	server.POST("/signup", services.SignUp)
+	server.POST("/login", services.Login)
 }

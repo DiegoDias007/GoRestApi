@@ -1,6 +1,11 @@
 package models
 
-import "api.com/database"
+import (
+	"errors"
+
+	"api.com/database"
+	"api.com/utils"
+)
 
 type User struct {
 	ID       int
@@ -19,6 +24,23 @@ func (user User) SaveUser() error {
 	if err != nil {
 		return err
 	}
-	user.ID = userId
+	return nil
+}
+
+func (user User) AuthenticateUser() error {
+	var validateUser User
+	query := `
+		SELECT email, password FROM users
+		WHERE email = $1
+	`
+	row := database.DB.QueryRow(query, user.Email)
+	err := row.Scan(&validateUser.Email, &validateUser.Password)
+	if err != nil {
+		return err
+	}
+	isUserValid := utils.CheckHashedPassword(user.Password, validateUser.Password)
+	if !isUserValid {
+		return errors.New("invalid credentials")
+	}
 	return nil
 }

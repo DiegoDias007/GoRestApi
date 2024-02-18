@@ -4,9 +4,30 @@ import (
 	"net/http"
 
 	"api.com/models"
+	"api.com/utils"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
+
+func Login(context *gin.Context) {
+	var user models.User
+	err := context.ShouldBindJSON(&user)
+	if err != nil {
+		context.JSON(
+			http.StatusBadRequest, gin.H{"message": "Could not parse data."},
+		)
+		return
+	}
+	err = user.AuthenticateUser()
+	if err != nil {
+		context.JSON(
+			http.StatusBadRequest, gin.H{"message": "Invalid credentials."},
+		)
+		return
+	}
+	context.JSON(
+		http.StatusOK, gin.H{"message": "User login successful."},
+	)
+}
 
 func SignUp(context *gin.Context) {
 	var user models.User
@@ -17,7 +38,7 @@ func SignUp(context *gin.Context) {
 		)
 		return
 	}
-	hashedPassword, err := hashPassword(user.Password)
+	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError, gin.H{"message": "Could not hash password"},
@@ -32,12 +53,4 @@ func SignUp(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusCreated, gin.H{"message": "User created"})
-}
-
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	if err != nil {
-		return "", err
-	}
-	return string(bytes), nil
 }
