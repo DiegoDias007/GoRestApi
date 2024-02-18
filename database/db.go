@@ -30,6 +30,20 @@ func loadEnv() {
 }
 
 func createTables() {
+	createUsersTable := `
+	CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			email TEXT NOT NULL UNIQUE,
+			password TEXT NOT NULL
+	)
+`
+	_, err := DB.Exec(createUsersTable)
+	if err != nil {
+		panic("Error when creating users table.")
+	} else {
+		fmt.Println("Users table created.")
+	}
+
 	createEventsTable := `
         CREATE TABLE IF NOT EXISTS events (
             id SERIAL PRIMARY KEY,
@@ -37,12 +51,13 @@ func createTables() {
             description TEXT NOT NULL,
             location TEXT NOT NULL,
             dateTime TIMESTAMP NOT NULL,
-            user_id INTEGER
+            user_id INTEGER,
+						FOREIGN KEY(user_id) REFERENCES users(id)
         )
     `
-	_, err := DB.Exec(createEventsTable)
+	_, err = DB.Exec(createEventsTable)
 	if err != nil {
-		panic("Error while creating events table.")
+		panic("Error when creating events table.")
 	} else {
 		fmt.Println("Events table created.")
 	}

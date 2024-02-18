@@ -10,5 +10,6 @@ func main() {
 	database.ConnectDB()
 	server := gin.Default()
 	controllers.RegisterEventController(server)
+	controllers.RegisterAuthController(server)
 	server.Run(":8080") // localhost: 8080
 }
