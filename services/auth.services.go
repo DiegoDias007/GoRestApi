@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"net/http"
 
 	"api.com/models"
@@ -20,12 +21,20 @@ func Login(context *gin.Context) {
 	err = user.AuthenticateUser()
 	if err != nil {
 		context.JSON(
-			http.StatusBadRequest, gin.H{"message": "Invalid credentials."},
+			http.StatusUnauthorized, gin.H{"message": "Invalid credentials."},
+		)
+		return
+	}
+	token, err := utils.CreateToken(user.Email, user.ID)
+	fmt.Println(err)
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError, gin.H{"message": "Could not generate token."},
 		)
 		return
 	}
 	context.JSON(
-		http.StatusOK, gin.H{"message": "User login successful."},
+		http.StatusOK, gin.H{"message": "Login successful.", "token": token},
 	)
 }
 
@@ -52,5 +61,12 @@ func SignUp(context *gin.Context) {
 		)
 		return
 	}
-	context.JSON(http.StatusCreated, gin.H{"message": "User created"})
+	token, err := utils.CreateToken(user.Email, user.ID)
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError, gin.H{"message": "Could not generate token."},
+		)
+		return
+	}
+	context.JSON(http.StatusCreated, gin.H{"message": "User created", "token": token})
 }
