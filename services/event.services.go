@@ -13,7 +13,7 @@ func AddEvent(context *gin.Context) {
 	var event models.Event
 	err := context.ShouldBindJSON(&event)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "Bad request, please try again."})
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse data."})
 		return
 	} else {
 		event.DateTime = time.Now()
@@ -21,7 +21,7 @@ func AddEvent(context *gin.Context) {
 		if err != nil {
 			context.JSON(
 				http.StatusInternalServerError,
-				gin.H{"message": "Error while saving the event, please try again later."},
+				gin.H{"message": "Could not save event."},
 			)
 			return
 		}
@@ -32,7 +32,7 @@ func AddEvent(context *gin.Context) {
 func GetAllEvents(context *gin.Context) {
 	events, err := models.GetAllEvents()
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "Error fetching events."})
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not fetch events."})
 		return
 	}
 	context.JSON(http.StatusOK, gin.H{"message": "Get all events", "events": events})
@@ -41,7 +41,7 @@ func GetAllEvents(context *gin.Context) {
 func GetSingleEvent(context *gin.Context) {
 	eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "Error fetching event."})
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not fetch event."})
 		return
 	}
 	event, err := models.GetSingleEvent(eventId)
@@ -55,7 +55,7 @@ func GetSingleEvent(context *gin.Context) {
 func UpdateEvent(context *gin.Context) {
 	eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "Error parsing event id"})
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse event id"})
 		return
 	}
 	_, err = models.GetSingleEvent(eventId)
@@ -87,7 +87,7 @@ func UpdateEvent(context *gin.Context) {
 func DeleteEvent(context *gin.Context) {
 	eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "Error parsing event id"})
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse event id"})
 		return
 	}
 	event, err := models.GetSingleEvent(eventId)

@@ -13,21 +13,21 @@ func SignUp(context *gin.Context) {
 	err := context.ShouldBindJSON(&user)
 	if err != nil {
 		context.JSON(
-			http.StatusBadRequest, gin.H{"message": "Error parsing data."},
+			http.StatusBadRequest, gin.H{"message": "Could not parse data."},
 		)
 		return
 	}
 	hashedPassword, err := hashPassword(user.Password)
 	if err != nil {
 		context.JSON(
-			http.StatusInternalServerError, gin.H{"message": "Error when hashing password"},
+			http.StatusInternalServerError, gin.H{"message": "Could not hash password"},
 		)
 	}
 	user.Password = hashedPassword
 	err = user.SaveUser()
 	if err != nil {
 		context.JSON(
-			http.StatusInternalServerError, gin.H{"message": "Error saving user."},
+			http.StatusInternalServerError, gin.H{"message": "Could not save user."},
 		)
 		return
 	}
