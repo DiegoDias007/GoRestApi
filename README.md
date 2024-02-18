@@ -1,8 +1,8 @@
 POST /events                    = Create a new event (Auth required)
 GET /events                     = Get a list of all events
 GET /events/:id                 = Get a single event
-PUT /events/:id                 = Update a event (Auth required) (Only by event creator)
-DELETE /events                  = Delete a event (Auth required) (Only by event creator)
+PUT /events/:id                 = Update a event (Auth required) (Only by creator of the event)
+DELETE /events                  = Delete a event (Auth required) (Only by creator of the event)
 POST /signup                    = Create a new user
 POST /login                     = Authenticate a user (JWT)
 POST /events/:id/register       = Register user for event (Auth required)
