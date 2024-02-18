@@ -11,7 +11,7 @@ type Event struct {
 	Name        string `binding:"required"`
 	Description string `binding:"required"`
 	Location    string `binding:"required"`
-	DateTime    time.Time
+	DateTime    time.Time `binding:"required"`
 	UserID      int
 }
 
@@ -78,6 +78,17 @@ func (event Event) UpdateEvent() error {
 	_, err := database.DB.Exec(
 		query, event.Name, event.Description, event.Location, event.DateTime, event.ID,
 	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (event Event) DeleteEvent() error {
+	query := `
+		DELETE FROM events WHERE id = $1
+	`
+	_, err := database.DB.Exec(query, event.ID)
 	if err != nil {
 		return err
 	}

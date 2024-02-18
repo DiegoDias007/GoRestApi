@@ -7,7 +7,8 @@ import (
 
 func RegisterEventController(server *gin.Engine) {
 	server.GET("/events", services.GetAllEvents)
-	server.GET("/events/:eventId", services.GetSingleEvent)
 	server.POST("/events", services.AddEvent)
+	server.GET("/events/:eventId", services.GetSingleEvent)
 	server.PUT("/events/:eventId", services.UpdateEvent)
+	server.DELETE("/events/:eventId", services.DeleteEvent)
 }
