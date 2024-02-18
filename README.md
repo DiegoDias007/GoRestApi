@@ -1,9 +1,1 @@
-POST /events                    = Create a new event (Auth required)
-GET /events                     = Get a list of all events
-GET /events/:id                 = Get a single event
-PUT /events/:id                 = Update a event (Auth required) (Only by creator of the event)
-DELETE /events                  = Delete a event (Auth required) (Only by creator of the event)
-POST /signup                    = Create a new user
-POST /login                     = Authenticate a user (JWT)
-POST /events/:id/register       = Register user for event (Auth required)
-DELETE /events/:id/register     = Cancel registration (Auth required)
+![image](https://github.com/DiegoDias007/GoRestApi/assets/127633385/db1bd149-4a74-421c-97ba-0d081890f182)
