@@ -68,3 +68,18 @@ func GetSingleEvent(id int64) (*Event, error) {
 	}
 	return &event, nil
 }
+
+func (event Event) UpdateEvent() error {
+	query := `
+		UPDATE events
+		SET name = $1, description = $2, location = $3, dateTime = $4
+		WHERE id = $5 
+	`
+	_, err := database.DB.Exec(
+		query, event.Name, event.Description, event.Location, event.DateTime, event.ID,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
