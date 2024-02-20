@@ -94,3 +94,28 @@ func (event *Event) DeleteEvent() error {
 	}
 	return nil
 }
+
+func (event *Event) RegisterUser(userId int) error {
+	var registrationId int
+	query := `
+		INSERT INTO registrations (event_id, user_id)
+		VALUES ($1, $2)
+		RETURNING id
+	`
+	err := database.DB.QueryRow(query, event.ID, userId).Scan(&registrationId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (event *Event) DeleteRegistration(userId int) error {
+	query := `
+		DELETE FROM events WHERE event_id = $1 && user_id = $2 
+	`
+	_, err := database.DB.Exec(query, event.ID, userId)
+	if err != nil {
+		return err
+	}
+	return nil
+}

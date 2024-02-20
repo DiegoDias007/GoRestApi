@@ -125,3 +125,59 @@ func DeleteEvent(context *gin.Context) {
 	)
 
 }
+
+func RegisterUserForEvent(context *gin.Context) {
+	userId := context.GetInt("userId")
+	eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
+	if err != nil {
+		context.JSON(
+			http.StatusBadRequest, gin.H{"message": "Could not parse event id."},
+		)
+	}
+	event, err := models.GetSingleEvent(eventId)
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError, gin.H{"message": "Could not fetch event."},
+		)
+		return
+	}
+	err = event.RegisterUser(userId)
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError, 
+			gin.H{"message": "Could not register user for the event."},
+		)
+		return
+	}
+	context.JSON(
+		http.StatusCreated, gin.H{"message": "User registration successful."},
+	)
+}
+
+func DeleteUserRegistration(context *gin.Context) {
+	userId := context.GetInt("userId")
+	eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
+	if err != nil {
+		context.JSON(
+			http.StatusBadRequest, gin.H{"message": "Could not parse event id."},
+		)
+	}
+	event, err := models.GetSingleEvent(eventId)
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError, gin.H{"message": "Could not fetch event."},
+		)
+		return
+	}
+	err = event.DeleteRegistration(userId)
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError, 
+			gin.H{"message": "Could not delete event registration."},
+		)
+		return
+	}
+	context.JSON(
+		http.StatusOK, gin.H{"message": "Registration deletion successful."},
+	)
+}
