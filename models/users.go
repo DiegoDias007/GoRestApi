@@ -13,7 +13,7 @@ type User struct {
 	Password string `binding:"required"`
 }
 
-func (user User) SaveUser() error {
+func (user *User) SaveUser() int {
 	var userId int
 	query := `
 		INSERT INTO users (email, password)
@@ -22,19 +22,19 @@ func (user User) SaveUser() error {
 	`
 	err := database.DB.QueryRow(query, user.Email, user.Password).Scan(&userId)
 	if err != nil {
-		return err
+		return 0
 	}
-	return nil
+	return userId
 }
 
-func (user User) AuthenticateUser() error {
+func (user *User) AuthenticateUser() error {
 	var validateUser User
 	query := `
-		SELECT email, password FROM users
+		SELECT email, password, id FROM users
 		WHERE email = $1
 	`
 	row := database.DB.QueryRow(query, user.Email)
-	err := row.Scan(&validateUser.Email, &validateUser.Password)
+	err := row.Scan(&validateUser.Email, &validateUser.Password, &validateUser.ID)
 	if err != nil {
 		return err
 	}
@@ -42,5 +42,6 @@ func (user User) AuthenticateUser() error {
 	if !isUserValid {
 		return errors.New("invalid credentials")
 	}
+	user.ID = validateUser.ID
 	return nil
 }

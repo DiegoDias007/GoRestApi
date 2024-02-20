@@ -3,7 +3,6 @@ package services
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"api.com/models"
 	"github.com/gin-gonic/gin"
@@ -16,7 +15,8 @@ func AddEvent(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse data."})
 		return
 	} else {
-		event.DateTime = time.Now()
+		userId := context.GetInt("userId")
+		event.UserID = userId
 		err := event.SaveEvent()
 		if err != nil {
 			context.JSON(

@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"net/http"
 
 	"api.com/models"
@@ -10,7 +9,7 @@ import (
 )
 
 func Login(context *gin.Context) {
-	var user models.User
+	var user *models.User
 	err := context.ShouldBindJSON(&user)
 	if err != nil {
 		context.JSON(
@@ -26,7 +25,6 @@ func Login(context *gin.Context) {
 		return
 	}
 	token, err := utils.CreateToken(user.Email, user.ID)
-	fmt.Println(err)
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError, gin.H{"message": "Could not generate token."},
@@ -54,14 +52,14 @@ func SignUp(context *gin.Context) {
 		)
 	}
 	user.Password = hashedPassword
-	err = user.SaveUser()
-	if err != nil {
+	userId := user.SaveUser()
+	if userId == 0 {
 		context.JSON(
 			http.StatusInternalServerError, gin.H{"message": "Could not save user."},
 		)
 		return
 	}
-	token, err := utils.CreateToken(user.Email, user.ID)
+	token, err := utils.CreateToken(user.Email, userId)
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError, gin.H{"message": "Could not generate token."},

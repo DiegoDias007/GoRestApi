@@ -8,9 +8,9 @@ import (
 
 type Event struct {
 	ID          int
-	Name        string `binding:"required"`
-	Description string `binding:"required"`
-	Location    string `binding:"required"`
+	Name        string    `binding:"required"`
+	Description string    `binding:"required"`
+	Location    string    `binding:"required"`
 	DateTime    time.Time `binding:"required"`
 	UserID      int
 }
@@ -24,8 +24,8 @@ func (event *Event) SaveEvent() error {
     `
 	err := database.DB.QueryRow(
 		query, event.Name, event.Description, event.Location, event.DateTime, event.UserID,
-	) .Scan(&eventId)
-	
+	).Scan(&eventId)
+
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (event *Event) SaveEvent() error {
 
 func GetAllEvents() ([]Event, error) {
 	var events []Event
-	
+
 	query := "SELECT * FROM events"
 	rows, err := database.DB.Query(query)
 	if err != nil {
@@ -46,7 +46,7 @@ func GetAllEvents() ([]Event, error) {
 	for rows.Next() {
 		var event Event
 		err := rows.Scan(
-			&event.ID, &event.Name, &event.Description, &event.Location, 
+			&event.ID, &event.Name, &event.Description, &event.Location,
 			&event.DateTime, &event.UserID,
 		)
 		if err != nil {
@@ -61,7 +61,7 @@ func GetSingleEvent(id int64) (*Event, error) {
 	var event Event
 	query := "SELECT * FROM events WHERE id = $1"
 	row := database.DB.QueryRow(query, id)
-	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.Location, 
+	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.Location,
 		&event.DateTime, &event.UserID)
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func GetSingleEvent(id int64) (*Event, error) {
 	return &event, nil
 }
 
-func (event Event) UpdateEvent() error {
+func (event *Event) UpdateEvent() error {
 	query := `
 		UPDATE events
 		SET name = $1, description = $2, location = $3, dateTime = $4
@@ -84,7 +84,7 @@ func (event Event) UpdateEvent() error {
 	return nil
 }
 
-func (event Event) DeleteEvent() error {
+func (event *Event) DeleteEvent() error {
 	query := `
 		DELETE FROM events WHERE id = $1
 	`
