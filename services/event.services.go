@@ -53,18 +53,26 @@ func GetSingleEvent(context *gin.Context) {
 }
 
 func UpdateEvent(context *gin.Context) {
+	userId := context.GetInt("userId")
 	eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse event id"})
 		return
 	}
-	_, err = models.GetSingleEvent(eventId)
+	event, err := models.GetSingleEvent(eventId)
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError, gin.H{"message": "Could not fetch the event"},
 		)
 		return
 	}
+	if event.UserID != userId {
+		context.JSON(
+			http.StatusUnauthorized, gin.H{"message": "User not authorized to update event."},
+		)
+		return
+	}
+
 	var updatedEvent models.Event
 	err = context.ShouldBindJSON(&updatedEvent)
 	if err != nil {
@@ -72,6 +80,7 @@ func UpdateEvent(context *gin.Context) {
 			http.StatusInternalServerError, gin.H{"message": "Could not parse request data"},
 		)
 	}
+	updatedEvent.UserID = userId
 	updatedEvent.ID = int(eventId)
 	err = updatedEvent.UpdateEvent()
 	if err != nil {
@@ -85,6 +94,7 @@ func UpdateEvent(context *gin.Context) {
 }
 
 func DeleteEvent(context *gin.Context) {
+	userId := context.GetInt("userId")
 	eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse event id"})
@@ -94,6 +104,12 @@ func DeleteEvent(context *gin.Context) {
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError, gin.H{"message": "Could not fetch the event"},
+		)
+		return
+	}
+	if event.UserID != userId {
+		context.JSON(
+			http.StatusUnauthorized, gin.H{"message":" User not allowed to delete event."},
 		)
 		return
 	}

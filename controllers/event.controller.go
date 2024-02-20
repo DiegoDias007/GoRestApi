@@ -7,9 +7,11 @@ import (
 )
 
 func RegisterEventController(server *gin.Engine) {
+	requireAuth := server.Group("/")
+	requireAuth.Use(utils.Authenticate)
+	requireAuth.POST("/events", services.AddEvent)
+	requireAuth.PUT("/events/:eventId", services.UpdateEvent)
+	requireAuth.DELETE("/events/:eventId", services.DeleteEvent)
 	server.GET("/events", services.GetAllEvents)
-	server.POST("/events", utils.Authenticate, services.AddEvent)
 	server.GET("/events/:eventId", services.GetSingleEvent)
-	server.PUT("/events/:eventId", services.UpdateEvent)
-	server.DELETE("/events/:eventId", services.DeleteEvent)
 }
